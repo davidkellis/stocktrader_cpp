@@ -65,6 +65,7 @@ public:
     Interval r = Interval(rhs);
     
     Interval i;
+    //cout << leg(l,r) << endl;
     if(l > r) {
       i = l - r;
     } else if(l < r) {
@@ -113,7 +114,7 @@ public:
   virtual ~Interval() {
   }
 
-  Interval operator-() {
+  Interval operator-() const {
     Interval i = Interval(-years, -months, -days, -hours, -minutes, -seconds);
     return i;
   }

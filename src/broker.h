@@ -173,15 +173,15 @@ public:
   }
 
   int sell_short_amt(Account& account, string ticker, ULL timestamp, double amount = 0.0) {
-    int retval = 0;
-    if(amount > 0 && account.cash > 0) {
+    int shares = 0;
+    if(amount == 0 && account.cash > 0) {
       amount = account.cash;
     }
     int max_shares = (int)floor((double)(amount - sell_commission) / exchange->quote(ticker, timestamp, -1));
     if(max_shares > 0) {
-      retval = sell_short(account, ticker, max_shares, timestamp);
+      shares = sell_short(account, ticker, max_shares, timestamp);
     }
-    return retval;
+    return shares;
   }
 
   int sell_all(Account& account, string ticker, ULL timestamp) {

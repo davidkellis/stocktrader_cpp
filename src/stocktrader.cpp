@@ -128,12 +128,12 @@ void test_interpolation_search() {
   cout << "interpolation_search(l2, 100001, DIR_RIGHT) => " << interpolation_search(l2, 100001, DIR_RIGHT) << endl;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
   //test_price_history();
   //test_csv();
   //test_interpolation_search();
-  test_split_timestamp();
-  //run_expectation_mean_experiment();
+  //test_split_timestamp();
+  run_expectation_mean_experiment(argv[1]);
   
   return 0;
 }

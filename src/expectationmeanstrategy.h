@@ -61,7 +61,9 @@ public:
   }
 
   void reset() {
-    account->reset();
+    if(account) {
+      account->reset();
+    }
     state = 0;
     mode = rand() % 2;
     origin_price = 0;
@@ -90,9 +92,11 @@ public:
     switch(mode) {
     case LONG:
       s = account->buy_amap(ticker, timestamp, amount_per_company);
+      //cout << "enter: bought " << s << " shares of " << ticker << " on " << timestamp << " at $" << account->broker->quote(ticker, timestamp, 0) << "/share." << endl;
       break;
     case SHORT:
       s = account->sell_short_amt(ticker, timestamp, amount_per_company);
+      //cout << "enter: shorted " << s << " shares of " << ticker << " on " << timestamp << " at $" << account->broker->quote(ticker, timestamp, 0) << "/share." << endl;
       break;
     }
 
@@ -106,9 +110,11 @@ public:
     switch(mode) {
     case LONG:
       s = account->sell_all(ticker, timestamp);
+      //cout << "exit: sold " << s << " shares of " << ticker << " on " << timestamp << " at $" << account->broker->quote(ticker, timestamp, 0) << "/share." << endl;
       break;
     case SHORT:
       s = account->buy(ticker, origin_shares, timestamp, true);         // buy [potentially] on margin
+      //cout << "exit: re-purchased " << s << " shares of " << ticker << " on " << timestamp << " at $" << account->broker->quote(ticker, timestamp, 0) << "/share." << endl;
       break;
     }
 

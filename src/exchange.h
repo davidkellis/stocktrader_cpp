@@ -25,11 +25,11 @@ public:
   virtual ~Exchange() {
   }
 
-  void add_price_history(string ticker, string filename_prefix = "", string filename_suffix = ".csv") {
+  void add_price_history(string ticker, string filename_prefix = "", string filename_suffix = "") {
     price_histories[ticker] = PriceHistory(filename_prefix + ticker + filename_suffix);
   }
 
-  void add_price_history(vector<string> tickers, string filename_prefix = "", string filename_suffix = ".csv") {
+  void add_price_history(vector<string> tickers, string filename_prefix = "", string filename_suffix = "") {
     for(unsigned int i = 0; i < tickers.size(); i++) {
       price_histories[tickers[i]] = PriceHistory(filename_prefix + tickers[i] + filename_suffix);
     }

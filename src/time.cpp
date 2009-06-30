@@ -21,6 +21,9 @@ int leg(const Interval& lhs, const Interval& rhs) {
   // how far is rhs from 2000-01-01 @ 00:00:00 ?
   ULL rhs_ts = timestamp + rhs;
   
+  //cout << timestamp << " + " << lhs.to_s() << " = " << lhs_ts << endl;
+  //cout << timestamp << " + " << rhs.to_s() << " = " << rhs_ts << endl;
+  
   int retval;
   if(lhs_ts > rhs_ts) {                 // lhs is a larger interval than rhs
     retval = 1;
@@ -121,23 +124,25 @@ ULL operator+(const ULL& ts, const Interval& i) {
   // ** the target month doesn't have, then the target day will be the last day of the target month.    **
 
   // normalize month count
-  int origin_month_length = days_in_month(year, month);
+  //int origin_month_length = days_in_month(year, month);
   month += i.months;
   // figure out how many years worth of months we can increment our year count by,
   //   and determine which month we will be in after we remove that number of years worth of months from the month count.
   /*
-  if(month > 12) {                                     // see http://tinyurl.com/mb92py for a demonstration of why this math works
+  if(month > 12) {                                     
     year += (month - 1) / 12;
     month = ((month - 1) % 12) + 1;
   }
   */
+  
+  // see http://tinyurl.com/nu97yg for a demonstration of why this math works
   multiple = 12;
   inc = floor((double)(month - 1) / multiple);
   year += inc;
   month = ((month - 1) - multiple*inc) + 1;
 
   int target_month_length = days_in_month(year, month);
-  if(target_month_length < origin_month_length) {     // adjust the day of the month if we need to
+  if(/* target_month_length < origin_month_length && */ day > target_month_length) {     // adjust the day of the month if we need to
     day = target_month_length;                        // set the day to the last day in the (shorter) target month
   }
 
@@ -174,6 +179,7 @@ ULL operator+(const ULL& ts, const Interval& i) {
   multiple = 12;
   day += i.days;
   int dpm = days_in_month(year, month);
+  //cout << day << " " << dpm << endl;
   while(day > dpm) {
     day -= dpm;
     month++;
@@ -186,15 +192,16 @@ ULL operator+(const ULL& ts, const Interval& i) {
     dpm = days_in_month(year, month);
   }
   while(day < 1) {
-    day += dpm;
     month--;
+    dpm = days_in_month(year, month);
+    day += dpm;
 
     // re-normalize month if needed
     inc = floor((double)(month - 1) / multiple);
     year += inc;
     month = ((month - 1) - multiple*inc) + 1;
 
-    dpm = days_in_month(year, month);
+    //dpm = days_in_month(year, month);
   }
 
   t = join_timestamp(year, month, day, hours, minutes, seconds);
@@ -210,6 +217,9 @@ ULL operator+(const ULL& ts, const Interval& i) {
  * that we are in (e.g. 12/3/2009 at 8:00 AM means that 2008 years, 11 months, 2 days, 8 hours have elapsed).
  */
 ULL operator-(const ULL& ts, const Interval& i) {
+  return ts + -i;
+  
+  /*
   ULL t = 0;
   int year,month,day,hours,minutes,seconds;
   long inc = 0;
@@ -237,7 +247,7 @@ ULL operator-(const ULL& ts, const Interval& i) {
   // ** the target month doesn't have, then the target day will be the last day of the target month.    **
 
   // normalize month count
-  int origin_month_length = days_in_month(year, month);
+  //int origin_month_length = days_in_month(year, month);
   month -= i.months;
   // figure out how many years worth of months we can decrement our year count by,
   //   and determine which month we will be in after we add that number of years worth of months from the month count.
@@ -247,7 +257,7 @@ ULL operator-(const ULL& ts, const Interval& i) {
   month = ((month - 1) - multiple*inc) + 1;
 
   int target_month_length = days_in_month(year, month);
-  if(target_month_length < origin_month_length) {     // adjust the day of the month if we need to
+  if(day > target_month_length) {     // adjust the day of the month if we need to
     day = target_month_length;                        // set the day to the last day in the (shorter) target month
   }
 
@@ -271,16 +281,30 @@ ULL operator-(const ULL& ts, const Interval& i) {
   multiple = 12;
   day -= i.days;
   int dpm = days_in_month(year, month);
-  while(day < 1) {
-    day += dpm;
-    month--;
 
+//  while(day < 1) {
+//    day += dpm;
+//    month--;
+//
+//    // re-normalize month if needed
+//    inc = floor((double)(month - 1) / multiple);
+//    year += inc;
+//    month = ((month - 1) - multiple*inc) + 1;
+//
+//    dpm = days_in_month(year, month);
+//  }
+
+  while(day < 1) {
+    month--;
+    dpm = days_in_month(year, month);
+    day += dpm;
+    
     // re-normalize month if needed
     inc = floor((double)(month - 1) / multiple);
     year += inc;
     month = ((month - 1) - multiple*inc) + 1;
-
-    dpm = days_in_month(year, month);
+    
+    //dpm = days_in_month(year, month);
   }
   while(day > dpm) {
     day -= dpm;
@@ -297,6 +321,7 @@ ULL operator-(const ULL& ts, const Interval& i) {
   t = join_timestamp(year, month, day, hours, minutes, seconds);
 
   return t;
+   */
 }
 
 
@@ -493,6 +518,15 @@ void test_split_timestamp() {
   cout << i.to_s() << " <=> " << l.to_s() << " = " << leg(i, l) << endl;
   cout << i.to_s() << " <=> " << r.to_s() << " = " << leg(i, r) << endl;
   cout << l.to_s() << " <=> " << r.to_s() << " = " << leg(l, r) << endl;
+  
+  cout << endl;
+  
+  l = Interval(0, 1, -29, 4, -29, 0);
+  r = Interval(0, 0, 2, 3, 31, 0);
+  cout << l.to_s() << " <=> " << r.to_s() << " = " << leg(l, r) << endl;
+  cout << l.to_s() << " < " << r.to_s() << "  -> " << ((l < r) ? "true" : "false") << endl;
+  cout << l.to_s() << " == " << r.to_s() << " -> " << ((l == r) ? "true" : "false") << endl;
+  cout << l.to_s() << " > " << r.to_s() << "  -> " << ((l > r) ? "true" : "false") << endl;
   
   cout << endl;
   
