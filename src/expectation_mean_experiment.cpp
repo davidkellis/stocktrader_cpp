@@ -163,11 +163,11 @@ void run_expectation_mean_experiment(string filename) {
 
   double commission_fees = 7.0;
   double initial_deposit = 10000;
-  UL trial_count = 1000;
+  UL trial_count = 10000;
 
-  double small_gain = 0.02;
+  double small_gain = 0.01;
   double large_gain = 0.1;
-  double small_loss = -0.02;
+  double small_loss = -0.01;
   double large_loss = -0.1;
 
   Exchange e = Exchange();
