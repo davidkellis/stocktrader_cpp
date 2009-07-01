@@ -116,7 +116,9 @@ vector<string> create_ticker_visitation_sequence(vector<string> tickers, UL sequ
     }
 
     // build a sequence of tickers consisting of subsequences of the same ticker symbol
+    cout << "Ticker visitation sequence:" << endl;
     for(map<string,int>::iterator it = ticker_counts.begin(); it != ticker_counts.end(); it++) {
+      cout << (*it).first << " -> " << (*it).second << " times." << endl;
       for(int i = 0; i < (*it).second; i++) {
         sequence.push_back((*it).first);
       }
@@ -161,7 +163,7 @@ void run_expectation_mean_experiment(string filename) {
 
   double commission_fees = 7.0;
   double initial_deposit = 10000;
-  UL trial_count = 10000;
+  UL trial_count = 1000;
 
   double small_gain = 0.02;
   double large_gain = 0.1;
@@ -171,7 +173,7 @@ void run_expectation_mean_experiment(string filename) {
   Exchange e = Exchange();
   Broker scottrade = Broker(&e, commission_fees, commission_fees);
   Account* a = scottrade.new_account(initial_deposit);
-  map<Interval,vector<double> > strategy_results;
+  map<Interval,vector<ExpectationMeanResult> > strategy_results;
 
   Interval timestamp_increment = Interval(0, 0, 0, 0, 1, 0);      // 1 minutes timestamp increment
   vector<Interval> trading_intervals;
@@ -180,6 +182,7 @@ void run_expectation_mean_experiment(string filename) {
   time_t start_time, end_time;
   time(&start_time);
   ExpectationMeanStrategy strategy;
+  ExpectationMeanResult result;
   vector<string> tickers_to_trade;
   ULL t, trading_start, trading_end;
   Interval trading_interval;
@@ -218,27 +221,34 @@ void run_expectation_mean_experiment(string filename) {
       if(t == 0) {
         t = trading_end;
       }
-      strategy_results[trading_interval].push_back(a->value(t) - initial_deposit);
+
+      result.gain = a->value(t) - initial_deposit;
+      result.entry_to_exit = Interval::between(strategy.entry_timestamp, strategy.exit_timestamp);
+      //cout << "trial result: gain=" << result.gain << " ; entry-to-exit=" << result.entry_to_exit.to_s() << endl;
+      strategy_results[trading_interval].push_back(result);
     }
   }
   
   time(&end_time);
   cout << "Finished " << trial_count << " trials in " << difftime(end_time, start_time) << " seconds." << endl;
   
-  // iterate over the strategy results, average them, and then print them
-  double total;
+  // iterate over the strategy results, average the gains/losses as well as the entry-to-exit intervals, and then print them
+  double total_gain;
+  Interval total_duration;
   const Interval* duration;
-  const vector<double>* v_d;
-  for(map<Interval,vector<double> >::iterator it = strategy_results.begin(); it != strategy_results.end(); it++) {
-    total = 0;
+  const vector<ExpectationMeanResult>* em_results;
+  for(map<Interval,vector<ExpectationMeanResult> >::iterator it = strategy_results.begin(); it != strategy_results.end(); it++) {
+    total_gain = 0;
     duration = &((*it).first);
-    v_d = &((*it).second);
-    for(UL i = 0; i < v_d->size(); i++) {
-      total += v_d->operator[](i);
+    em_results = &((*it).second);
+    for(UL i = 0; i < em_results->size(); i++) {
+      total_gain += em_results->operator[](i).gain;
+      total_duration = total_duration + em_results->operator[](i).entry_to_exit;
     }
-    cout << duration->to_s() << ": " << total / v_d->size() << endl;
+    cout << duration->to_s() << ":" << endl;
+    cout << "  average gain: " << total_gain / em_results->size() << endl;
+    cout << "  average entry-to-exit: " << (total_duration / em_results->size()).to_s() << endl;
   }
-  
   
   return;
 }

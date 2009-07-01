@@ -4,6 +4,8 @@
 //============================================================================
 
 #include <iostream>
+#include <ctime>          // time()
+#include <cstdlib>        // srand() and rand()
 #include "expectation_mean_experiment.h"
 #include "csv.h"
 #include "pricehistory.h"
@@ -129,6 +131,9 @@ void test_interpolation_search() {
 }
 
 int main(int argc, char* argv[]) {
+  // seed the random number generator
+  srand(time(0));
+
   //test_price_history();
   //test_csv();
   //test_interpolation_search();

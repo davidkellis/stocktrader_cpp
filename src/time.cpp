@@ -81,6 +81,25 @@ Interval operator-(const Interval& lhs, const Interval& rhs) {
   return i;
 }
 
+Interval operator/(const Interval& lhs, const long& divisor) {
+  Interval i;
+  if(divisor != 0) {
+    ULL s = (31556926 * lhs.years + 2629743.83 * lhs.months + 86400 * lhs.days + 3600 * lhs.hours + 60 * lhs.minutes + lhs.seconds) / divisor;
+    i.years = s / 31556926;
+    s %= 31556926;
+    i.months = s / 2629743.83;
+    s %= 2629744;
+    i.days = s / 86400;
+    s %= 86400;
+    i.hours = s / 3600;
+    s %= 3600;
+    i.minutes = s / 60;
+    s %= 60;
+    i.seconds = s;
+  }
+  return i;
+}
+
 ULL operator+(const Interval& i, const ULL& ts) {
   return ts + i;
 }

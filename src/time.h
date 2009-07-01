@@ -28,6 +28,7 @@ bool operator!=(const Interval& lhs, const Interval& rhs);
 
 Interval operator+(const Interval& lhs, const Interval& rhs);
 Interval operator-(const Interval& lhs, const Interval& rhs);
+Interval operator/(const Interval& lhs, const long &rhs);
 ULL operator+(const Interval& i, const ULL& ts);
 ULL operator+(const ULL& ts, const Interval& i);
 ULL operator-(const ULL& ts, const Interval& i);
