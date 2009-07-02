@@ -49,7 +49,7 @@ int getDayOfWeek(int month, int day, int year, int CalendarSystem);
 int getDayOfWeek(Interval i, int CalendarSystem);
 int getDayOfWeek(ULL timestamp, int CalendarSystem);
 
-void test_split_timestamp();
+void test_date_time_implementation();
 
 
 class Interval {

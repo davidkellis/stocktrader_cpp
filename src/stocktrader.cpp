@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
   //test_price_history();
   //test_csv();
   //test_interpolation_search();
-  //test_split_timestamp();
+  //test_date_time_implementation();
   run_expectation_mean_experiment(argv[1]);
   
   return 0;

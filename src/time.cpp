@@ -84,10 +84,12 @@ Interval operator-(const Interval& lhs, const Interval& rhs) {
 Interval operator/(const Interval& lhs, const long& divisor) {
   Interval i;
   if(divisor != 0) {
-    ULL s = (31556926 * lhs.years + 2629743.83 * lhs.months + 86400 * lhs.days + 3600 * lhs.hours + 60 * lhs.minutes + lhs.seconds) / divisor;
+    LL s = 0;
+    s += (LL)(31556926 * (LL)lhs.years + 2629744 * (LL)lhs.months + 86400 * (LL)lhs.days + 3600 * (LL)lhs.hours + 60 * (LL)lhs.minutes + (LL)lhs.seconds);
+    s /= divisor;
     i.years = s / 31556926;
     s %= 31556926;
-    i.months = s / 2629743.83;
+    i.months = s / 2629744;
     s %= 2629744;
     i.days = s / 86400;
     s %= 86400;
@@ -478,7 +480,7 @@ int getDayOfWeek(ULL timestamp, int CalendarSystem) {
   return getDayOfWeek(month, day, year, CalendarSystem);
 }
 
-void test_split_timestamp() {
+void test_date_time_implementation() {
   ULL timestamp = 20090618001732ULL;
   int dt;
   int tm;
@@ -546,6 +548,12 @@ void test_split_timestamp() {
   cout << l.to_s() << " < " << r.to_s() << "  -> " << ((l < r) ? "true" : "false") << endl;
   cout << l.to_s() << " == " << r.to_s() << " -> " << ((l == r) ? "true" : "false") << endl;
   cout << l.to_s() << " > " << r.to_s() << "  -> " << ((l > r) ? "true" : "false") << endl;
+  
+  cout << endl;
+  
+  i = Interval(390, -1354, -3395, -6671, -5719, 0);       // ~9.7556 days
+  long divisor = 10000;
+  cout << i.to_s() << " / " << divisor << " = " << (i / divisor).to_s() << endl;
   
   cout << endl;
   
