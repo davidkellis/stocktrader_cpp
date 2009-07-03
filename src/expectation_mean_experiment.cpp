@@ -223,7 +223,7 @@ void run_expectation_mean_experiment(string filename) {
       }
 
       result.gain = a->value(t) - initial_deposit;
-      result.entry_to_exit = Interval::between(strategy.entry_timestamp, strategy.exit_timestamp);
+      result.entry_to_exit = Interval::between(strategy.entry_timestamp, t);
       //cout << "trial result: gain=" << result.gain << " ; entry-to-exit=" << result.entry_to_exit.to_s() << endl;
       strategy_results[trading_interval].push_back(result);
     }
@@ -247,6 +247,7 @@ void run_expectation_mean_experiment(string filename) {
     }
     cout << duration->to_s() << ":" << endl;
     cout << "  average gain: " << total_gain / em_results->size() << endl;
+    //cout << "  total entry-to-exit: " << total_duration.to_s() << endl;
     cout << "  average entry-to-exit: " << (total_duration / em_results->size()).to_s() << endl;
   }
   
